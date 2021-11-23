@@ -1,0 +1,5 @@
+quickjs/qjs
+quickjs/qjsc
+quickjs/repl.c
+quickjs/.obj/*
+.vscode/
