@@ -1,3 +1,4 @@
 [submodule "quickjs"]
 	path = quickjs
 	url = git@github.com:bellard/quickjs.git
+	shallow = true

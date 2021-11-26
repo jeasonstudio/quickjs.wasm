@@ -1,2 +1,0 @@
-FROM wasienv/wasienv:latest
-

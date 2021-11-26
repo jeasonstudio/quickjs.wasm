@@ -1,12 +1,26 @@
-build:
-	emcc -o quickjs.wasm \
-		./quickjs/libunicode.c ./quickjs/cutils.c ./quickjs/libbf.c ./quickjs/libregexp.c ./quickjs/quickjs.c ./quickjs/quickjs-libc.c ./quickjs/qjs.c ./quickjs/repl.c ./quickjs/qjscalc.c \
-		-DCONFIG_VERSION="\"1.0.0\"" -s WASM=1 -s SINGLE_FILE -s MODULARIZE=1 -lm -Oz -s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' --llvm-lto 3 -s AGGRESSIVE_VARIABLE_ELIMINATION=1 --closure 1 --no-entry
+VERSION=wasi-1.0.0
+WASICC=wasicc
+QUICKJS_ROOT=./quickjs
+DIST_DIR=./dist
+QUICKJS_LIB=$(QUICKJS_ROOT)/libunicode.c $(QUICKJS_ROOT)/cutils.c $(QUICKJS_ROOT)/libbf.c $(QUICKJS_ROOT)/libregexp.c $(QUICKJS_ROOT)/quickjs.c $(QUICKJS_ROOT)/quickjs-libc.c $(QUICKJS_ROOT)/qjs.c $(QUICKJS_ROOT)/repl.c $(QUICKJS_ROOT)/qjscalc.c
 
-wasicc:
-	wasicc ./quickjs/libunicode.c ./quickjs/cutils.c ./quickjs/libbf.c ./quickjs/libregexp.c ./quickjs/quickjs.c ./quickjs/quickjs-libc.c ./quickjs/qjs.c ./quickjs/repl.c ./quickjs/qjscalc.c \
-		-DCONFIG_VERSION='"wasi"' \
-		-D_WASI_EMULATED_SIGNAL \
-		-DCONFIG_BIGNUM=y \
-		-O3 \
-		-o quickjs.wasm
+WASICC_FLAGS+=-D CONFIG_VERSION='"$(VERSION)"'
+WASICC_FLAGS+=-D CONFIG_BIGNUM=y
+# WASICC_FLAGS+=-D_WASI_EMULATED_SIGNAL
+# WASICC_FLAGS+=-L -llibwasi-emulated-signal.a
+WASICC_FLAGS+=-O3
+
+install:
+	git submodule update --init
+	cd $(QUICKJS_ROOT); git apply ../quickjs.patch &> /dev/null || true
+	cd $(QUICKJS_ROOT); make repl.c; make qjscalc.c
+
+all: install $(DIST_DIR)/quickjs.wasm
+
+$(DIST_DIR)/quickjs.wasm:
+	mkdir -p $(DIST_DIR)
+	$(WASICC) $(QUICKJS_LIB) $(WASICC_FLAGS) -o $(DIST_DIR)/quickjs.wasm
+
+clean:
+	cd $(QUICKJS_ROOT); make clean
+	rm -rf $(DIST_DIR)
