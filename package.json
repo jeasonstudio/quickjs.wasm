@@ -1,0 +1,27 @@
+{
+  "name": "quickjs.wasm",
+  "version": "1.0.0",
+  "description": "Compile quick.js to webassembly and push to ghcr as standard OCI image.",
+  "main": "index.js",
+  "directories": {
+    "example": "example",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeasonstudio/quickjs.wasm.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeasonstudio/quickjs.wasm/issues"
+  },
+  "homepage": "https://github.com/jeasonstudio/quickjs.wasm#readme",
+  "devDependencies": {
+    "esbuild": "^0.13.15"
+  }
+}
